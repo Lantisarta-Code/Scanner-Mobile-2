@@ -1,3 +1,44 @@
 plugins {
-    id 'com.android.application' version '8.5.2' apply false
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.easycentral.bot'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.easycentral.bot'
+        minSdk 21
+        targetSdk 34
+        // every build on GitHub gets a higher number, so a new APK installs over the old one
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
+        versionName '1.' + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    signingConfigs {
+        release {
+            // the same key for every build, so updates install without removing the app first
+            storeFile file('easycentral.keystore')
+            storePassword 'easycentral'
+            keyAlias 'easycentral'
+            keyPassword 'easycentral'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
 }
